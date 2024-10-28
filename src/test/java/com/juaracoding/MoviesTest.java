@@ -47,6 +47,7 @@ public class MoviesTest {
                 .get(baseUrl+"{movie_id}")
                 .then()
                 .statusCode(404)
+                .body("status_message", equalTo("The resource you requested could not be found."))
                 .log().all();
     }
 
@@ -66,6 +67,25 @@ public class MoviesTest {
                 .post(baseUrl + "{movie_id}/rating")
                 .then()
                 .statusCode(201)
+                .body("status_message", equalTo("The item/record was updated successfully."))
+                .log().all();
+    }
+
+    @Test
+    public void testAddRatingNegative() {
+        int movieId = 912649;
+        double ratingValue = -8.5;
+
+        given()
+                .pathParams("movie_id", movieId)
+                .header("Authorization", "Bearer " + myToken)
+                .contentType("application/json;charset=utf-8")
+                .body("{\"value\":" + ratingValue + "}")
+                .when()
+                .post(baseUrl + "{movie_id}/rating")
+                .then()
+                .statusCode(400)
+                .body("status_message", equalTo("Value too low: Value must be greater than 0.0."))
                 .log().all();
     }
 }

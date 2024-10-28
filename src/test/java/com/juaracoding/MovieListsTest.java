@@ -67,6 +67,21 @@ public class MovieListsTest {
                 .get(baseUrl + "popular")
                 .then()
                 .statusCode(401)
+                .body("status_message", equalTo("Invalid API key: You must be granted a valid key."))
+                .log().all();
+    }
+
+    @Test
+    public void testMoviePopularNotFound() {
+        given()
+                .queryParam("language", "en-US")
+                .queryParam("page", "-2")
+                .header("Authorization", "Bearer " + myToken)
+                .when()
+                .get(baseUrl + "popular")
+                .then()
+                .statusCode(400)
+                .body("status_message", equalTo("Invalid page: Pages start at 1 and max at 500. They are expected to be an integer."))
                 .log().all();
     }
 }
